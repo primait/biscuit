@@ -71,6 +71,14 @@ biscuit get -f secrets.yml launch_codes
 Next steps: examine `secrets.yml` in your favorite text editor, and run 
 `biscuit --help` to learn about additional commands.
 
+### Updating glock deps
+
+```shell
+cd $GOPATH/src
+go get -u -v ./...
+glock save github.com/primait/biscuit
+```
+
 ### Uninstalling
 
 Done already?
