@@ -1,6 +1,6 @@
 # Biscuit
 
-[![Build Status](https://travis-ci.org/dcoker/biscuit.svg)](https://travis-ci.org/dcoker/biscuit)
+[![Build Status](https://travis-ci.org/primait/biscuit.svg)](https://travis-ci.org/primait/biscuit)
 
 Biscuit is a simple key-value store for your infrastructure secrets.
 
@@ -41,14 +41,14 @@ you if you answer "yes" to any of these questions:
 
 #### Downloading
 
-See [releases](https://github.com/dcoker/biscuit/releases) for the latest release.
+See [releases](https://github.com/primait/biscuit/releases) for the latest release.
 
 #### Building from Source
 
 If you have Golang 1.6+ installed, you can install with:
 
 ```
-go get -v github.com/dcoker/biscuit
+go get -v github.com/primait/biscuit
 ```
 
 ### Setup

@@ -9,10 +9,10 @@ import (
 
 	"sync"
 
-	"github.com/dcoker/biscuit/algorithms"
-	"github.com/dcoker/biscuit/keymanager"
-	"github.com/dcoker/biscuit/shared"
-	"github.com/dcoker/biscuit/store"
+	"github.com/primait/biscuit/algorithms"
+	"github.com/primait/biscuit/keymanager"
+	"github.com/primait/biscuit/shared"
+	"github.com/primait/biscuit/store"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
