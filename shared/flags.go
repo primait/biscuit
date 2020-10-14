@@ -6,7 +6,7 @@ import (
 
 	"regexp"
 
-	"github.com/dcoker/biscuit/algorithms"
+	"github.com/primait/biscuit/algorithms"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

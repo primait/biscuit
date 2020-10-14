@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dcoker/biscuit/shared"
-	"github.com/dcoker/biscuit/store"
+	"github.com/primait/biscuit/shared"
+	"github.com/primait/biscuit/store"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

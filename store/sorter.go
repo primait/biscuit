@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dcoker/biscuit/keymanager"
+	"github.com/primait/biscuit/keymanager"
 )
 
 // Sort is a function that rearranges a ValueList in place.

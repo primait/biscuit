@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/dcoker/biscuit/commands"
-	"github.com/dcoker/biscuit/commands/awskms"
-	"github.com/dcoker/biscuit/shared"
+	"github.com/primait/biscuit/commands"
+	"github.com/primait/biscuit/commands/awskms"
+	"github.com/primait/biscuit/shared"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

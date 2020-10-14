@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dcoker/biscuit/shared"
+	"github.com/primait/biscuit/shared"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/kms"
-	"github.com/dcoker/biscuit/shared"
+	"github.com/primait/biscuit/shared"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

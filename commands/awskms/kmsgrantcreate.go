@@ -13,9 +13,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/sts"
-	"github.com/dcoker/biscuit/keymanager"
-	"github.com/dcoker/biscuit/shared"
-	"github.com/dcoker/biscuit/store"
+	"github.com/primait/biscuit/keymanager"
+	"github.com/primait/biscuit/shared"
+	"github.com/primait/biscuit/store"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

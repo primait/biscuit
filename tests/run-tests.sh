@@ -3,7 +3,7 @@
 # Run a bunch of shell-based tests in isolated environments using Docker.
 #
 set -e
-REPOSITORY=/go/src/github.com/dcoker/biscuit/
+REPOSITORY=/go/src/github.com/primait/biscuit/
 if [ "${CONTINUOUS_INTEGRATION}" != "true" ]; then
   echo __ Running with credentials from biscuit-testing profile.
   AWS_ACCESS_KEY_ID="$(aws configure --profile biscuit-testing get aws_access_key_id)"
