@@ -2,6 +2,7 @@ package keymanager
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
+  "github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 )
@@ -68,7 +69,8 @@ func (k *Kms) Label() string {
 func newKmsClient(arn string) (*kms.KMS, error) {
 	parsed, err := NewARN(arn)
 	if err != nil {
-		return kms.New(session.New()), nil
+    session := session.Must(session.NewSession(aws.NewConfig().WithSTSRegionalEndpoint(endpoints.RegionalSTSEndpoint)))
+		return kms.New(session), nil
 	}
-	return kms.New(session.New(&aws.Config{Region: &parsed.Region})), nil
+	return kms.New(session.Must(session.NewSession(aws.NewConfig().WithRegion(parsed.Region).WithSTSRegionalEndpoint(endpoints.RegionalSTSEndpoint)))), nil
 }
