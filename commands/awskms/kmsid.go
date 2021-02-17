@@ -3,8 +3,6 @@ package awskms
 import (
 	"fmt"
 
-  "github.com/aws/aws-sdk-go/aws"
-  "github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
 )
@@ -14,7 +12,12 @@ type KmsGetCallerIdentity struct{}
 
 // Run prints the results of STS GetCallerIdentity.
 func (w *KmsGetCallerIdentity) Run() error {
-	session := session.Must(session.NewSession(aws.NewConfig().WithSTSRegionalEndpoint(endpoints.RegionalSTSEndpoint)))
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+	})
+	if err != nil {
+		return err
+	}
 	credentials, err := session.Config.Credentials.Get()
 	if err != nil {
 		return err
