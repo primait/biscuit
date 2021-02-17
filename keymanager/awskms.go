@@ -69,7 +69,6 @@ func (k *Kms) Label() string {
 }
 
 func newKmsClient(arn string) (*kms.KMS, error) {
-	fmt.Println(arn)
 	parsed, err := NewARN(arn)
 	if err != nil {
 		session, err := session.NewSessionWithOptions(session.Options{
