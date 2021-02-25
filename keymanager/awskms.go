@@ -1,8 +1,9 @@
 package keymanager
 
 import (
+	"log"
+
 	"github.com/aws/aws-sdk-go/aws"
-  "github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 )
@@ -69,8 +70,17 @@ func (k *Kms) Label() string {
 func newKmsClient(arn string) (*kms.KMS, error) {
 	parsed, err := NewARN(arn)
 	if err != nil {
-    session := session.Must(session.NewSession(aws.NewConfig().WithSTSRegionalEndpoint(endpoints.RegionalSTSEndpoint)))
+		session, err := session.NewSessionWithOptions(session.Options{
+			SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+		})
+		if err != nil {
+			log.Fatal("error:", err)
+		}
 		return kms.New(session), nil
 	}
-	return kms.New(session.Must(session.NewSession(aws.NewConfig().WithRegion(parsed.Region).WithSTSRegionalEndpoint(endpoints.RegionalSTSEndpoint)))), nil
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+		Config:            *aws.NewConfig().WithRegion(parsed.Region),
+	})
+	return kms.New(session), nil
 }

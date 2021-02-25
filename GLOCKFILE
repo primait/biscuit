@@ -1,0 +1,13 @@
+github.com/alecthomas/template fb15b899a75114aa79cc930e33c46b577cc664b1
+github.com/alecthomas/units ff826a37aa15cdf16e29024a782c790f19aab6c2
+github.com/aws/aws-sdk-go 8d9532cec876077773ac81ffffcbba1fca0ad443
+github.com/davecgh/go-spew d8f796af33cc11cb798c1aaeb27a4ebc5099927d
+github.com/jmespath/go-jmespath 3d4fd11601ddca248480565884e34e393313cd62
+github.com/mattn/go-isatty 3751eb45e68b73541370d508d59323eaa44c0de2
+github.com/pmezard/go-difflib 5d4384ee4fb2527b0a1256a821ebfc92f91efefc
+github.com/stretchr/testify 6990a05d54c2287be8787a411d77815643347339
+golang.org/x/crypto eec23a3978adcfd26c29f4153eaa3e3d9b2cc53a
+golang.org/x/sys b926d437f3417e0b2853746eb2ff872a6bf46768
+gopkg.in/alecthomas/kingpin.v2 947dcec5ba9c011838740e680966fd7087a71d0d
+gopkg.in/yaml.v2 7649d4548cb53a614db133b2a8ac1f31859dda8c
+gopkg.in/yaml.v3 496545a6307b2a7d7a710fd516e5e16e8ab62dbc
