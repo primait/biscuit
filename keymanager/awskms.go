@@ -1,8 +1,7 @@
 package keymanager
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -75,8 +74,7 @@ func newKmsClient(arn string) (*kms.KMS, error) {
 			SharedConfigState: session.SharedConfigEnable, // Must be set to enable
 		})
 		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
+			log.Fatal("error:", err)
 		}
 		return kms.New(session), nil
 	}
