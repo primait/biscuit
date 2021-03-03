@@ -3,6 +3,7 @@ package awskms
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"sync"
@@ -41,7 +42,14 @@ func NewMultiRegionKey(aliasName string, regions []string, forceRegion string) (
 		go func(region string) {
 			defer wg.Done()
 			output := regionSpecificInfo{region: region}
-			client := kmsHelper{kms.New(session.New(&aws.Config{Region: &region}))}
+			session, err := session.NewSessionWithOptions(session.Options{
+				SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+				Config:            *aws.NewConfig().WithRegion(region),
+			})
+			if err != nil {
+				log.Fatal("error:", err)
+			}
+			client := kmsHelper{kms.New(session)}
 			keyID, policy, err := client.GetAliasTargetAndPolicy(aliasName)
 			if err != nil {
 				output.err = err
@@ -96,7 +104,14 @@ func (m *MultiRegionKey) SetKeyPolicy(policy string) error {
 		wg.Add(1)
 		go func(region string) {
 			defer wg.Done()
-			client := kmsHelper{kms.New(session.New(&aws.Config{Region: &region}))}
+			session, err := session.NewSessionWithOptions(session.Options{
+				SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+				Config:            *aws.NewConfig().WithRegion(region),
+			})
+			if err != nil {
+				log.Fatal("error:", err)
+			}
+			client := kmsHelper{kms.New(session)}
 			if _, err := client.PutKeyPolicy(&kms.PutKeyPolicyInput{
 				KeyId:      aws.String(m.regionToID[region]),
 				PolicyName: aws.String("default"),
@@ -124,7 +139,14 @@ func (m *MultiRegionKey) GetGrantDetails() (map[string][]*kms.GrantListEntry, er
 		wg.Add(1)
 		go func(region string) {
 			defer wg.Done()
-			client := kmsHelper{kms.New(session.New(&aws.Config{Region: &region}))}
+			session, err := session.NewSessionWithOptions(session.Options{
+				SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+				Config:            *aws.NewConfig().WithRegion(region),
+			})
+			if err != nil {
+				log.Fatal("error:", err)
+			}
+			client := kmsHelper{kms.New(session)}
 			var grants []*kms.GrantListEntry
 			if err := client.ListGrantsPages(
 				&kms.ListGrantsInput{KeyId: aws.String(m.regionToID[region])},
@@ -172,7 +194,14 @@ func (m *MultiRegionKey) AddGrant(grant kms.CreateGrantInput) (map[string]kms.Cr
 		go func(region string, grant kms.CreateGrantInput) {
 			defer wg.Done()
 			grant.KeyId = aws.String(m.regionToID[region])
-			kmsClient := kms.New(session.New(&aws.Config{Region: &region}))
+			session, err := session.NewSessionWithOptions(session.Options{
+				SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+				Config:            *aws.NewConfig().WithRegion(region),
+			})
+			if err != nil {
+				log.Fatal("error:", err)
+			}
+			kmsClient := kms.New(session)
 			createGrantOutput, err := kmsClient.CreateGrant(&grant)
 			if err != nil {
 				results <- addGrantResults{region: region, err: err}
@@ -203,7 +232,14 @@ func (m *MultiRegionKey) RetireGrant(name string) error {
 		wg.Add(1)
 		go func(region string) {
 			defer wg.Done()
-			kmsClient := kms.New(session.New(&aws.Config{Region: &region}))
+			session, err := session.NewSessionWithOptions(session.Options{
+				SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+				Config:            *aws.NewConfig().WithRegion(region),
+			})
+			if err != nil {
+				log.Fatal("error:", err)
+			}
+			kmsClient := kms.New(session)
 			// Find GrantID in this region
 			var grantID *string
 			if err := kmsClient.ListGrantsPages(&kms.ListGrantsInput{

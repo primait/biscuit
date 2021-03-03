@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -116,7 +117,13 @@ func (w *kmsGrantsCreate) Run() error {
 }
 
 func computeGrantName(input kms.CreateGrantInput) (string, error) {
-	callerIdentity, err := sts.New(session.New()).GetCallerIdentity(nil)
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+	})
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	callerIdentity, err := sts.New(session).GetCallerIdentity(nil)
 	if err != nil {
 		return "", err
 	}
@@ -145,7 +152,14 @@ func resolveValuesToAliasesAndRegions(values store.ValueList) (map[string][]stri
 			aliases["alias/"+arn.Resource] = append(aliases["alias/"+arn.Resource], arn.Region)
 		} else if arn.IsKmsKey() {
 			region := arn.Region
-			client := kmsHelper{kms.New(session.New(&aws.Config{Region: &region}))}
+			session, err := session.NewSessionWithOptions(session.Options{
+				SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+				Config:            *aws.NewConfig().WithRegion(region),
+			})
+			if err != nil {
+				log.Fatal("error:", err)
+			}
+			client := kmsHelper{kms.New(session)}
 			alias, err := client.GetAliasByKeyID(arn.Resource)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%s: Unable to find an alias for this key: %s\n", v.KeyID, err)
@@ -160,7 +174,13 @@ func resolveValuesToAliasesAndRegions(values store.ValueList) (map[string][]stri
 }
 
 func resolveGranteeArns(granteePrincipal, retiringPrincipal string) (string, string, error) {
-	stsClient := sts.New(session.New(&aws.Config{}))
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+	})
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	stsClient := sts.New(session)
 	callerIdentity, err := stsClient.GetCallerIdentity(nil)
 	if err != nil {
 		return "", "", err

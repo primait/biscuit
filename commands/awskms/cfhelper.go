@@ -2,6 +2,7 @@ package awskms
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -28,7 +29,14 @@ func (s *cloudformationStack) parameterList() (output []*cloudformation.Paramete
 }
 
 func (s *cloudformationStack) createAndWait() (map[string]string, error) {
-	cfclient := cloudformation.New(session.New(&aws.Config{Region: &s.region}))
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+		Config:            *aws.NewConfig().WithRegion(s.region),
+	})
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	cfclient := cloudformation.New(session)
 	createStackInput := &cloudformation.CreateStackInput{
 		StackName:    &s.stackName,
 		Capabilities: []*string{aws.String("CAPABILITY_IAM")},

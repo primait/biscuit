@@ -3,6 +3,7 @@ package awskms
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strings"
@@ -174,7 +175,14 @@ func collectRegionInfo(stackName, keyAlias string, regions []string) (map[string
 }
 
 func checkCloudFormationStackExists(stackName, region string) (bool, error) {
-	cfclient := cloudformation.New(session.New(&aws.Config{Region: aws.String(region)}))
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+		Config:            *aws.NewConfig().WithRegion(region),
+	})
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	cfclient := cloudformation.New(session)
 	_, err := cfclient.DescribeStacks(&cloudformation.DescribeStacksInput{
 		StackName: aws.String(stackName),
 	})
@@ -192,7 +200,14 @@ func checkCloudFormationStackExists(stackName, region string) (bool, error) {
 
 func checkKmsKeyExists(keyAlias, region string) (string, error) {
 	var foundAliasArn string
-	kmsClient := kms.New(session.New(&aws.Config{Region: aws.String(region)}))
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+		Config:            *aws.NewConfig().WithRegion(region),
+	})
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	kmsClient := kms.New(session)
 	var callbackErr error
 	fp := func(p *kms.ListAliasesOutput, lastPage bool) bool {
 		for _, aliasRecord := range p.Aliases {
@@ -321,7 +336,14 @@ func (w *kmsInit) createKeyInRegion(region, stackName, aliasName string, finalAd
 
 func createAlias(region, aliasName, keyArn string) (string, error) {
 	fmt.Printf("%s: creating alias '%s' for key %s.\n", region, aliasName, keyArn)
-	client := kmsHelper{kms.New(session.New(&aws.Config{Region: aws.String(region)}))}
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+		Config:            *aws.NewConfig().WithRegion(region),
+	})
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	client := kmsHelper{kms.New(session)}
 	if _, err := client.CreateAlias(&kms.CreateAliasInput{
 		TargetKeyId: aws.String(keyArn),
 		AliasName:   aws.String(aliasName)}); err != nil {
@@ -346,7 +368,13 @@ func truefalse(iff bool) string {
 }
 
 func (w *kmsInit) constructArns() ([]string, []string, error) {
-	stsClient := sts.New(session.New(&aws.Config{}))
+	session, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
+	})
+	if err != nil {
+		log.Fatal("error:", err)
+	}
+	stsClient := sts.New(session)
 	callerIdentity, err := stsClient.GetCallerIdentity(nil)
 	if err != nil {
 		return nil, nil, err
