@@ -7,11 +7,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/primait/biscuit/keymanager"
@@ -117,13 +115,7 @@ func (w *kmsGrantsCreate) Run() error {
 }
 
 func computeGrantName(input kms.CreateGrantInput) (string, error) {
-	session, err := session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
-	})
-	if err != nil {
-		log.Fatal("error:", err)
-	}
-	callerIdentity, err := sts.New(session).GetCallerIdentity(nil)
+	callerIdentity, err := sts.New(shared.GetNewSession()).GetCallerIdentity(nil)
 	if err != nil {
 		return "", err
 	}
@@ -151,15 +143,7 @@ func resolveValuesToAliasesAndRegions(values store.ValueList) (map[string][]stri
 		if arn.IsKmsAlias() {
 			aliases["alias/"+arn.Resource] = append(aliases["alias/"+arn.Resource], arn.Region)
 		} else if arn.IsKmsKey() {
-			region := arn.Region
-			session, err := session.NewSessionWithOptions(session.Options{
-				SharedConfigState: session.SharedConfigEnable, // Must be set to enable
-				Config:            *aws.NewConfig().WithRegion(region),
-			})
-			if err != nil {
-				log.Fatal("error:", err)
-			}
-			client := kmsHelper{kms.New(session)}
+			client := kmsHelper{kms.New(shared.GetNewSessionWithRegion(arn.Region))}
 			alias, err := client.GetAliasByKeyID(arn.Resource)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%s: Unable to find an alias for this key: %s\n", v.KeyID, err)
@@ -174,13 +158,7 @@ func resolveValuesToAliasesAndRegions(values store.ValueList) (map[string][]stri
 }
 
 func resolveGranteeArns(granteePrincipal, retiringPrincipal string) (string, string, error) {
-	session, err := session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
-	})
-	if err != nil {
-		log.Fatal("error:", err)
-	}
-	stsClient := sts.New(session)
+	stsClient := sts.New(shared.GetNewSession())
 	callerIdentity, err := stsClient.GetCallerIdentity(nil)
 	if err != nil {
 		return "", "", err

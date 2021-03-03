@@ -1,11 +1,9 @@
 package keymanager
 
 import (
-	"log"
-
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/primait/biscuit/shared"
 )
 
 const (
@@ -70,17 +68,7 @@ func (k *Kms) Label() string {
 func newKmsClient(arn string) (*kms.KMS, error) {
 	parsed, err := NewARN(arn)
 	if err != nil {
-		session, err := session.NewSessionWithOptions(session.Options{
-			SharedConfigState: session.SharedConfigEnable, // Must be set to enable
-		})
-		if err != nil {
-			log.Fatal("error:", err)
-		}
-		return kms.New(session), nil
+		return kms.New(shared.GetNewSession()), nil
 	}
-	session, err := session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
-		Config:            *aws.NewConfig().WithRegion(parsed.Region),
-	})
-	return kms.New(session), nil
+	return kms.New(shared.GetNewSessionWithRegion(parsed.Region)), nil
 }
