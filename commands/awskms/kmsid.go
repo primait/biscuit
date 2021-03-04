@@ -3,8 +3,8 @@ package awskms
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/primait/biscuit/shared"
 )
 
 // KmsGetCallerIdentity prints AWS client configuration info.
@@ -12,12 +12,7 @@ type KmsGetCallerIdentity struct{}
 
 // Run prints the results of STS GetCallerIdentity.
 func (w *KmsGetCallerIdentity) Run() error {
-	session, err := session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable, // Must be set to enable
-	})
-	if err != nil {
-		return err
-	}
+	session := shared.GetNewSession()
 	credentials, err := session.Config.Credentials.Get()
 	if err != nil {
 		return err

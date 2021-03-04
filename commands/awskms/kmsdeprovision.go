@@ -6,8 +6,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/primait/biscuit/shared"
@@ -57,7 +55,7 @@ func (w *kmsDeprovision) deprovisionOneRegion(region string) error {
 	stackName := cfStackName(*w.label)
 	fmt.Printf("%s: Searching for label '%s'...\n", region, *w.label)
 	var foundAlias *kms.AliasListEntry
-	kmsClient := kmsHelper{kms.New(session.New(&aws.Config{Region: &region}))}
+	kmsClient := kmsHelper{kms.New(shared.GetNewSessionWithRegion(region))}
 	foundAlias, err := kmsClient.GetAliasByName(aliasName)
 	if err != nil {
 		return err
@@ -85,7 +83,7 @@ func (w *kmsDeprovision) deprovisionOneRegion(region string) error {
 	}
 	fmt.Printf("%s: Found stack: %s\n", region, stackName)
 	if *w.destructive {
-		cfclient := cloudformation.New(session.New(&aws.Config{Region: &region}))
+		cfclient := cloudformation.New(shared.GetNewSessionWithRegion(region))
 		fmt.Printf("%s: Deleting CloudFormation stack. This may take a while...\n", region)
 		if _, err := cfclient.DeleteStack(&cloudformation.DeleteStackInput{StackName: &stackName}); err != nil {
 			return err

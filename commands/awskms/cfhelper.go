@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/primait/biscuit/shared"
 )
 
 type cloudformationStack struct {
@@ -28,7 +28,7 @@ func (s *cloudformationStack) parameterList() (output []*cloudformation.Paramete
 }
 
 func (s *cloudformationStack) createAndWait() (map[string]string, error) {
-	cfclient := cloudformation.New(session.New(&aws.Config{Region: &s.region}))
+	cfclient := cloudformation.New(shared.GetNewSessionWithRegion(s.region))
 	createStackInput := &cloudformation.CreateStackInput{
 		StackName:    &s.stackName,
 		Capabilities: []*string{aws.String("CAPABILITY_IAM")},

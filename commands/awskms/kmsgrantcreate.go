@@ -10,7 +10,6 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/primait/biscuit/keymanager"
@@ -116,7 +115,7 @@ func (w *kmsGrantsCreate) Run() error {
 }
 
 func computeGrantName(input kms.CreateGrantInput) (string, error) {
-	callerIdentity, err := sts.New(session.New()).GetCallerIdentity(nil)
+	callerIdentity, err := sts.New(shared.GetNewSession()).GetCallerIdentity(nil)
 	if err != nil {
 		return "", err
 	}
@@ -144,8 +143,7 @@ func resolveValuesToAliasesAndRegions(values store.ValueList) (map[string][]stri
 		if arn.IsKmsAlias() {
 			aliases["alias/"+arn.Resource] = append(aliases["alias/"+arn.Resource], arn.Region)
 		} else if arn.IsKmsKey() {
-			region := arn.Region
-			client := kmsHelper{kms.New(session.New(&aws.Config{Region: &region}))}
+			client := kmsHelper{kms.New(shared.GetNewSessionWithRegion(arn.Region))}
 			alias, err := client.GetAliasByKeyID(arn.Resource)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%s: Unable to find an alias for this key: %s\n", v.KeyID, err)
@@ -160,7 +158,7 @@ func resolveValuesToAliasesAndRegions(values store.ValueList) (map[string][]stri
 }
 
 func resolveGranteeArns(granteePrincipal, retiringPrincipal string) (string, string, error) {
-	stsClient := sts.New(session.New(&aws.Config{}))
+	stsClient := sts.New(shared.GetNewSession())
 	callerIdentity, err := stsClient.GetCallerIdentity(nil)
 	if err != nil {
 		return "", "", err
